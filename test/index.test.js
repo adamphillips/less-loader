@@ -17,6 +17,13 @@ describe("less-loader", () => {
     test("should transform urls", "url-path");
     test("should transform urls to files above the current directory", "folder/url-path");
     test("should transform urls to files above the sibling directory", "folder2/url-path");
+    test("should support paths relative to resolve.modules", "folder2/path-relative-to-modules", {
+        resolve: {
+            modules: [
+                path.resolve(__dirname, "../test/less")
+            ]
+        }
+    });
     test("should generate source-map", "source-map", {
         options: {
             sourceMap: true
@@ -50,6 +57,9 @@ describe("less-loader", () => {
             output: {
                 path: path.resolve(__dirname, "output"),
                 filename: "bundle.js"
+            },
+            resolve: {
+                modules: []
             }
         }, (err, stats) => {
             if (err) { throw err; }
@@ -85,6 +95,8 @@ function test(name, id, testOptions) {
             }
         };
 
+        const resolveOptions = testOptions.resolve || config.resolve;
+
         testOptions.before && testOptions.before(config);
 
         // run asynchronously
@@ -92,7 +104,7 @@ function test(name, id, testOptions) {
             entry: lessFile,
             context: __dirname,
             devtool: testOptions.devtool,
-            resolve: config.resolve,
+            resolve: resolveOptions,
             output: {
                 path: path.resolve(__dirname, "output"),
                 filename: "bundle.js",
